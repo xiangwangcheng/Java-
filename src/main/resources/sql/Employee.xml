@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//sql.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.study.cxw.dao.EmployeeDao">
+  <resultMap id="BaseResultMap" type="Employee">
+    <id column="id" property="id" jdbcType="CHAR"/>
+    <result column="name" property="name" jdbcType="VARCHAR"/>
+    <result column="department_id" property="departmentId" jdbcType="VARCHAR"/>
+    <result column="description" property="description" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+		id, name, department_id, description
+	</sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from employee
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <select id="selectByDepartmentId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from employee
+    where department_id = #{departmentId,jdbcType=CHAR}
+  </select>
+  <select id="selectByDepartmentIdAndName" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select
+    <include refid="Base_Column_List"/>
+    from employee
+    where department_id = #{departmentId,jdbcType=CHAR} and name = #{name,jdbcType=VARCHAR}
+  </select>
+  <select id="getEmployeeByCondition" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from employee
+    <where>
+      <if test="name !=null">
+        AND name like concat('%',#{name,jdbcType=VARCHAR},'%')
+      </if>
+    </where>
+  </select>
+</mapper>

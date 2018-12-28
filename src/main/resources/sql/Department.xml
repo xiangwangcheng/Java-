@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//sql.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.study.cxw.dao.DepartmentDao">
+  <resultMap id="BaseResultMap" type="Department">
+    <id column="id" property="id" jdbcType="CHAR"/>
+    <result column="name" property="name" jdbcType="VARCHAR"/>
+    <result column="description" property="description" jdbcType="VARCHAR"/>
+  </resultMap>
+  <resultMap id="NestedSelectResultMap" extends="BaseResultMap" type="Department">
+    <collection property="employeeList" column="id" javaType="java.util.List"
+      ofType="Employee" select="com.study.cxw.dao.EmployeeDao.selectByDepartmentId"/>
+  </resultMap>
+  <resultMap id="NestedResultMap" type="Department" extends="BaseResultMap">
+    <collection property="employeeList" javaType="java.util.List" ofType="Employee">
+      <id column="employee_id" property="id" jdbcType="CHAR"/>
+      <result column="employee_name" property="name" jdbcType="VARCHAR"/>
+      <result column="department_id" property="departmentId" jdbcType="CHAR"/>
+      <result column="department_description" property="description" jdbcType="VARCHAR"/>
+    </collection>
+  </resultMap>
+  <resultMap id="ResultMapWithEmployeeMulti" extends="BaseResultMap" type="Department">
+    <collection property="employeeList" column="{departmentId=id,name=name}"
+      javaType="java.util.List"
+      ofType="Employee" select="com.study.cxw.dao.EmployeeDao.selectByDepartmentIdAndName"/>
+  </resultMap>
+
+  <select id="selectByPrimaryKey" resultMap="NestedSelectResultMap"
+    parameterType="java.lang.String">
+    select
+    id, name, description
+    from department
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <select id="getAllDepartments_NestedSelect" resultMap="NestedSelectResultMap"
+    parameterType="java.lang.String">
+    select
+    id, name, description
+    from department
+  </select>
+  <select id="getAllDepartments_NestedResultMap" resultMap="NestedResultMap"
+    parameterType="java.lang.String">
+    select
+    d.id, d.name, d.description, e.id employee_id,e.name employee_name,e.department_id,e.description department_description
+    from department d left join employee e on d.id = e.department_id
+  </select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//sql.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.study.cxw.dao.TestListParamDao">
+  <update id="updateStatusUsingOptimisticLock">
+    update orders set status=#{status, jdbcType=INTEGER},updated_at=now()
+    WHERE id=#{id, jdbcType=CHAR} and updated_at=#{updatedAt, jdbcType=TIMESTAMP} and status IN
+    <foreach item="item" index="index" collection="statuses"
+      open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </update>
+
+  <select id="selectById" resultType="java.util.Date"
+    parameterType="java.lang.String">
+    select updated_at
+    from orders t_o
+    where t_o.id = #{id,jdbcType=CHAR}
+  </select>
+</mapper>
